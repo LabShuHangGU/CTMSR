@@ -48,7 +48,7 @@ python setup.py develop
 ```bash
 # batch size = 4 (GPUs) × 8 (per GPU)
 
-CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --use-env --nproc_per_node=4 --master_port=1145  train.py -opt options/train/ctmsr_train.yml --launcher pytorch
+CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --use-env --nproc_per_node=4 --master_port=1145  basicsr/train.py -opt options/train/ctmsr_train.yml --launcher pytorch
 ```
 
 ## Testing
@@ -61,7 +61,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --use-env --npro
 ### Testing Commands
 - Refer to the testing configuration files in `./options/test` folder for detailed settings.
 ```bash
-CUDA_VISIBLE_DEVICES=0 python test.py -opt options/test/ctmsr_test.yml
+CUDA_VISIBLE_DEVICES=0 python basicsr/test.py -opt options/test/ctmsr_test.yml
 ```
 
 
