@@ -1,0 +1,330 @@
+# GENERATE TIME: Thu Jul 25 02:21:52 2024
+# CMD:
+# basicsr/train.py -opt options/train/edm_unet_CT_SRx4.yml --launcher pytorch
+
+
+# general settings
+name: ctsmr_train
+model_type: EdmUNetRealModel
+scale: 4
+num_gpu: 2
+manual_seed: 0
+find_unused_parameters: False
+
+# dataset and data loader settings
+
+degradation:
+  sf: 4
+  # the first degradation process
+  resize_prob: [0.2, 0.7, 0.1]  # up, down, keep
+  resize_range: [0.15, 1.5]
+  gaussian_noise_prob: 0.5
+  noise_range: [1, 30]
+  poisson_scale_range: [0.05, 3.0]
+  gray_noise_prob: 0.4
+  jpeg_range: [30, 95]
+
+  # the second degradation process
+  second_order_prob: 0.5
+  second_blur_prob: 0.8
+  resize_prob2: [0.3, 0.4, 0.3]  # up, down, keep
+  resize_range2: [0.3, 1.2]
+  gaussian_noise_prob2: 0.5
+  noise_range2: [1, 25]
+  poisson_scale_range2: [0.05, 2.5]
+  gray_noise_prob2: 0.4
+  jpeg_range2: [30, 95]
+
+  gt_size: 256 
+  resize_back: true
+  use_sharp: False
+
+
+datasets:
+  train:
+    name: ImageNet
+    # name: afhqv2_256
+    type: RealESRGANDataset
+    dir_paths: ['./datasets/ImageNet/data/ImageNet2012/ILSVRC2012_img_train',]
+    im_exts: ['JPEG', ]
+    io_backend:
+      type: disk
+    blur_kernel_size: 21
+    kernel_list: ['iso', 'aniso', 'generalized_iso', 'generalized_aniso', 'plateau_iso', 'plateau_aniso']
+    kernel_prob: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+    sinc_prob: 0.1
+    blur_sigma: [0.2, 3.0]
+    betag_range: [0.5, 4.0]
+    betap_range: [1, 2.0]
+
+    blur_kernel_size2: 15
+    kernel_list2: ['iso', 'aniso', 'generalized_iso', 'generalized_aniso', 'plateau_iso', 'plateau_aniso']
+    kernel_prob2: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+    sinc_prob2: 0.1
+    blur_sigma2: [0.2, 1.5]
+    betag_range2: [0.5, 4.0]
+    betap_range2: [1, 2.0]
+
+    mean: 0.5
+    std: 0.5
+
+    final_sinc_prob: 0.8
+
+    gt_size: 256
+    use_hflip: True
+    use_rot: False
+
+
+
+    # data loader
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 6
+    dataset_enlarge_ratio: 1
+    prefetch_mode: cuda
+    pin_memory: True
+    persistent_workers: True
+
+  val_1:
+    name: ImageNet
+    # name: afhqv2_256
+    type: PairedImageDataset
+    dataroot_gt: ./test_data/imagenet256/gt
+    dataroot_lq: ./test_data/imagenet256/lq_real
+    # dataroot_gt: ./validation/afhqv2_256/bicx4/gt
+    # dataroot_lq: ./validation/ImageNet/Bicubicx4/lq_opencv
+    mean: 0.5
+    std: 0.5
+    gt_size: 256
+    # scale: 4
+    # upsample: True
+    # upsampler: 'bicubic'
+    io_backend:
+      type: disk
+
+  val_2:
+    name: RealSet65
+    type: SingleImageDataset
+    # dataroot_gt: datasets/TestDataSR/HR/Set14/x2
+    dataroot_lq: ./test_data/RealSet65
+    mean: 0.5
+    std: 0.5
+    io_backend:
+      type: disk
+  
+  val_3:
+    name: RealSR
+    type: PairedImageDataset
+    # dataroot_gt: datasets/TestDataSR/HR/B100/x2
+    dataroot_lq: ./test_data/RealSR/lq
+    dataroot_gt: ./test_data/RealSR/gt
+    mean: 0.5
+    std: 0.5
+    io_backend:
+      type: disk
+
+
+# network structures
+network_g:
+  type: EDMUNet
+  img_resolution: 64
+  img_channels: 3
+  label_dim: 0
+  augment_dim: 0
+  model_channels: 192
+  use_fp16: False
+  model_type: 'SongUNet'
+  embedding_type: 'positional'
+  fourier_scale: 8
+  encoder_type: 'standard'
+  decoder_type: 'standard'
+  channel_mult_noise: 1
+  channel_mult_emb: 4
+  resample_filter: [1, 1,]
+  channel_mult: [1, 2, 2, 2,]
+  attn_resolutions: [64, 32, 16, 8]
+  dropout: 0.13
+  sigma_data: 0.5
+  sigma_min: 0
+  cond_lq: True
+  swin: True
+  scale: 4
+  use_enc: True
+  upsampler: 'nearest'
+  res_con: False
+  swin_params:
+    embed_dim: 192
+    use_conv: True
+    num_heads: 6
+    window_size: 8
+    depth: 1
+    patch_size: 1
+    mlp_ratio: 4
+    qkv_bias: True
+    qk_scale: ~
+    drop: 0
+    attn_drop: 0.
+    drop_path: 0.
+    use_checkpoint: False
+    patch_norm: False
+
+
+# path
+path:
+  pretrain_network_g: /home/youweiyi/project/ATD_Shift/experiments/CT_real_0.5_lpips_0.5_charbonnier_sigma_1_step_3_noise_rho_1_res_rho_1_bs32_ft25w/models/net_g_250000.pth
+  # pretrain_network_g: experiments/CT_bicx4_imagenet_sigma_2_noise_rho_1_res_rho_1_edm_unet_lpips_step_4_position_emb_bs8_30w/models/net_g_240000.pth
+  strict_load_g: true
+  # resume_state: experiments/CT_bicx4_imagenet_sigma_2_noise_rho_1_res_rho_1_edm_unet_lpips_step_4_position_emb_bs8_30w/training_states/240000.state
+  resume_state: ~
+
+# training settings
+train:
+  ema_decay: 0.999
+  optim_g:
+    type: AdamW
+    lr: !!float 5e-5
+    weight_decay: 0
+    betas: [0.9, 0.9]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [50000]
+    gamma: 0.5
+
+  # total_iter: 50200
+  ct_iter: 0
+  dtm_iter: 2000
+  warmup_iter: 0
+
+  # losses
+ 
+  consistency_opt:
+    loss_opt:
+      l_opt1:
+        type: lpips
+        weight: 0.5
+
+      l_opt2:
+        type: charbonnier
+        weight: 0.5
+
+    sigma_min: 0
+    sigma_max: 1
+    noise_rho: 1
+    res_rho: 1
+    s0: 3
+    s1: 3
+    use_enc: true
+
+  dtm_opt:
+    self_iterative: true
+    loss_type: dtm
+    time_scale: 1000
+    t_min: 0.1
+    t_max: 0.5
+    num_steps: 3
+    weight_type: improved
+    weight: 1.6
+    pixel_weight: 1
+    cond_lq: True
+    use_enc: True
+    model_path: /home/youweiyi/project/ATD_Shift/experiments/CT_real_0.5_lpips_0.5_charbonnier_sigma_1_step_3_noise_rho_1_res_rho_1_bs32_ft25w/models/net_g_250000.pth
+    loss_opt:
+      l_opt1:
+        type: lpips
+        weight: 1
+
+    
+    network_kwargs:
+      img_resolution: 64
+      img_channels: 3
+      label_dim: 0
+      augment_dim: 0
+      model_channels: 192
+      use_fp16: False
+      model_type: 'SongUNet'
+      embedding_type: 'positional'
+      fourier_scale: 8
+      encoder_type: 'standard'
+      decoder_type: 'standard'
+      channel_mult_noise: 1
+      channel_mult_emb: 4
+      resample_filter: [1, 1,]
+      channel_mult: [1, 2, 2, 2,]
+      attn_resolutions: [64, 32, 16, 8]
+      dropout: 0.13
+      sigma_data: 0.5
+      sigma_min: 0
+      cond_lq: True
+      swin: True
+      scale: 4
+      use_enc: True
+      upsampler: 'nearest'
+      swin_params:
+        embed_dim: 192
+        use_conv: True
+        num_heads: 6
+        window_size: 8
+        depth: 1
+        patch_size: 1
+        mlp_ratio: 4
+        qkv_bias: True
+        qk_scale: ~
+        drop: 0
+        attn_drop: 0.
+        drop_path: 0.
+        use_checkpoint: False
+        patch_norm: False
+# validation settings
+val:
+  val_freq: 500
+  save_img: False
+  chop_size: 512
+  chop_stride: 448
+  min_size: 64
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: yes
+    
+    ssim: # metric name, can be arbitrary
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: yes
+
+    lpips:
+      type: calculate_lpips
+      better: lower
+      
+    clipiqa:
+      type: calculate_clipiqa
+      better: higher
+    
+    musiq:
+      type: calculate_musiq
+      better: higher
+    
+    maniqa:
+      type: calculate_maniqa
+      better: higher
+    
+    niqe:
+      type: calculate_niqe
+      better: lower
+
+    
+
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 10000
+  use_tb_logger: false
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
