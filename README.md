@@ -1,4 +1,5 @@
-# Consistency Trajectory Matching for One-Step Generative Super-Resolution (ICCV 2025)
+<div align="center">
+<h2> Consistency Trajectory Matching for One-Step Generative Super-Resolution (ICCV 2025) </h2>
 
 
 
@@ -14,7 +15,7 @@
 <img width="800" src="assets/method.png"> 
 <img width="800" src="assets/visual_result.png"> 
 
-
+</div>
 
 
 ## News
