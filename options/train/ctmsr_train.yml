@@ -211,7 +211,7 @@ train:
     sigma_max: 1
     noise_rho: 1
     res_rho: 1
-    s0: 3
+    s0: 4
     s1: 3
     use_enc: true
 
