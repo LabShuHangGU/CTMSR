@@ -6,7 +6,7 @@
 [Weiyi You](https://scholar.google.com/citations?user=q4uALoAAAAAJ),  [Mingyang Zhang](),  [Leheng Zhang](https://scholar.google.com/citations?user=DH1CJqkAAAAJ&hl=zh-CN),  [Xingyu Zhou](https://scholar.google.com/citations?user=dgO3CyMAAAAJ),  [Kexuan Shi](https://scholar.google.com/citations?user=dX-aOIwAAAAJ&hl=zh-CN),  [Shuhang Gu](https://scholar.google.com/citations?user=-kSTt40AAAAJ)
 
 
-[![arXiv](https://img.shields.io/badge/arXiv-2503.20349-b31b1b.svg)](https://arxiv.org/abs/2503.20349)
+[![arXiv](https://img.shields.io/badge/arXiv-2503.20349-b31b1b.svg)](https://arxiv.org/abs/2503.20349v3)
 [![GitHub Stars](https://img.shields.io/github/stars/LabShuHangGU/CTMSR?style=social)](https://github.com/LabShuHangGU/CTMSR)
 
 
