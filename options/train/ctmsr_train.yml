@@ -170,7 +170,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: /home/youweiyi/project/ATD_Shift/experiments/CT_real_0.5_lpips_0.5_charbonnier_sigma_1_step_3_noise_rho_1_res_rho_1_bs32_ft25w/models/net_g_250000.pth
+  pretrain_network_g: ~
   # pretrain_network_g: experiments/CT_bicx4_imagenet_sigma_2_noise_rho_1_res_rho_1_edm_unet_lpips_step_4_position_emb_bs8_30w/models/net_g_240000.pth
   strict_load_g: true
   # resume_state: experiments/CT_bicx4_imagenet_sigma_2_noise_rho_1_res_rho_1_edm_unet_lpips_step_4_position_emb_bs8_30w/training_states/240000.state
