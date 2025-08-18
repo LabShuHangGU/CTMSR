@@ -262,8 +262,6 @@ class SREdmUNetRealModel(BaseModel):
                 param.requires_grad = False
             if model_path is not None:
                 self.load_network(self.diff_model, model_path, True, 'params_ema')
-                
-
         else:
             self.diff_opt = None
             self.diff_model = None
@@ -275,6 +273,7 @@ class SREdmUNetRealModel(BaseModel):
             # loss_opt['loss_weight'] = self.consistency_opt['loss_weight']
 
             self.net_target = build_network(self.opt['network_g']).to(self.device)
+            self.net_target.eval()
             for param in self.net_target.parameters():
                 param.requires_grad = False
             for p_target, p_net in zip(self.net_target.parameters(), self.net_g.parameters()):
@@ -328,15 +327,11 @@ class SREdmUNetRealModel(BaseModel):
 
         l_total = 0
         loss_dict = OrderedDict()
-
-
-
-        
+       
         # consistency loss
         if self.consistency_opt:
             for p_target, p_net in zip(self.net_target.parameters(), self.net_g.parameters()):
                 p_target.copy_(p_net.detach())
-
 
             use_enc = self.opt['network_g']['use_enc']
             sigma_min = self.consistency_opt.get('sigma_min', 0)

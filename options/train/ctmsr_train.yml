@@ -191,7 +191,7 @@ train:
     gamma: 0.5
 
   # total_iter: 50200
-  ct_iter: 0
+  ct_iter: 500000
   dtm_iter: 2000
   warmup_iter: 0
 
