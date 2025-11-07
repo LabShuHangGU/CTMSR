@@ -69,11 +69,13 @@ CUDA_VISIBLE_DEVICES=0 python basicsr/test.py -opt options/test/ctmsr_test.yml
 ## Citation
 
 ```
-@article{you2025consistency,
-  title={Consistency Trajectory Matching for One-Step Generative Super-Resolution},
-  author={You, Weiyi and Zhang, Mingyang and Zhang, Leheng and Zhou, Xingyu and Shi, Kexuan and Gu, Shuhang},
-  journal={arXiv preprint arXiv:2503.20349},
-  year={2025}
+@InProceedings{You_2025_ICCV,
+    author    = {You, Weiyi and Zhang, Mingyang and Zhang, Leheng and Zhou, Xingyu and Shi, Kexuan and Gu, Shuhang},
+    title     = {Consistency Trajectory Matching for One-Step Generative Super-Resolution},
+    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
+    year      = {2025},
+    pages     = {12747-12756}
 }
 ```
 
